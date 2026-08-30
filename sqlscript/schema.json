@@ -1,0 +1,17 @@
+{
+	"name": "schema",
+	"properties": {
+		"content": {
+			"query": "CREATE SCHEMA silver;\n\nCREATE SCHEMA gold;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseDWH",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

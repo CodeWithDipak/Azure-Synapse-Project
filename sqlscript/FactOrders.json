@@ -1,0 +1,17 @@
+{
+	"name": "FactOrders",
+	"properties": {
+		"content": {
+			"query": "--------------\n-- factOrders\n-------------\nIF NOT EXISTS (SELECT * FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id\nWHERE t.name = 'factOrders' and s.name = 'gold')\n    CREATE EXTERNAL TABLE gold.factOrders\n    WITH(\n        LOCATION = 'factOrders',\n        DATA_SOURCE = gold_layer,\n        FILE_FORMAT = parquetFormat\n    )\n    AS\n    (SELECT\n        C. DimCustomerKey,\n        P.DimProductKey,\n        R.DimRegionKey,\n        O.DimOrderKey,\n        Quantity,\n        UnitPrice,\n        TotalAmount\n    FROM silver.silverTable F\n    LEFT JOIN gold.dimCustomer C ON F.CustomerID = C.CustomerID\n    LEFT JOIN gold.dimProduct P ON F.ProductID = P.ProductID\n    LEFT JOIN gold.dimRegion R ON F.RegionID = R.RegionID and F.Country = R.Country\n    LEFT JOIN gold.dimOrder O ON F.OrderID = O.OrderID\n    )\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseDWH",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

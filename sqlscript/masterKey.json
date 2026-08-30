@@ -1,0 +1,17 @@
+{
+	"name": "masterKey",
+	"properties": {
+		"content": {
+			"query": "-- create the master key for encryption purpose of the credentials\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = '<Create master key>'",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseDWH",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

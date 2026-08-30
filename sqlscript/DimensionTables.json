@@ -1,0 +1,17 @@
+{
+	"name": "DimensionTables",
+	"properties": {
+		"content": {
+			"query": "---------------\n-- dimCustomer \n---------------\nIF NOT EXISTS (SELECT * FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id\n                WHERE t.name = 'dimCustomer' and s.name = 'gold')\n    CREATE EXTERNAL TABLE gold.dimCustomer\n    WITH(\n        LOCATION = 'dimCustomer',\n        DATA_SOURCE = gold_layer,\n        FILE_FORMAT = parquetFormat\n    )\n    AS\n    SELECT *, ROW_NUMBER() OVER(ORDER BY CustomerID) AS DimCustomerKey\n    FROM\n    (SELECT\n        DISTINCT\n        CustomerID,\n        FirstName,\n        LastName,\n        CustomerEmail\n    FROM\n        silver.silverTable\n    ) AS C\n\n--------------\n-- dimProduct \n--------------\nIF NOT EXISTS (SELECT * FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id\n                WHERE t.name = 'dimProduct' and s.name = 'gold')\n    CREATE EXTERNAL TABLE gold.dimProduct\n    WITH(\n        LOCATION = 'dimProduct',\n        DATA_SOURCE = gold_layer,\n        FILE_FORMAT = parquetFormat\n    )\n    AS\n    SELECT *, ROW_NUMBER() OVER(ORDER BY ProductID) AS DimProductKey\n    FROM\n    (SELECT\n        DISTINCT\n        ProductID,\n        ProductName,\n        ProductCategory\n    FROM\n        silver.silverTable\n    ) AS P\n\n----------------\n-- dimRegion\n----------------\nIF NOT EXISTS (SELECT * FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id\n                WHERE t.name = 'dimRegion' and s.name = 'gold')\n    CREATE EXTERNAL TABLE gold.dimRegion\n    WITH(\n        LOCATION = 'dimRegion',\n        DATA_SOURCE = gold_layer,\n        FILE_FORMAT = parquetFormat\n    )\n    AS\n    SELECT *, ROW_NUMBER() OVER(ORDER BY RegionID) AS DimRegionKey\n    FROM\n    (\n    SELECT\n        DISTINCT\n        RegionID,\n        RegionName,\n        country\n    FROM\n        silver.silverTable\n    ) AS R\n\n-------------\n-- dimOrder\n-------------\nIF NOT EXISTS (SELECT * FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id\n                WHERE t.name = 'dimOrder' and s.name = 'gold')\n    CREATE EXTERNAL TABLE gold.dimOrder\n    WITH(\n        LOCATION = 'dimOrder',\n        DATA_SOURCE = gold_layer,\n        FILE_FORMAT = parquetFormat\n    )\n    AS\n    SELECT *, ROW_NUMBER() OVER(ORDER BY OrderID) AS DimOrderKey\n    FROM\n    (SELECT\n        DISTINCT\n        OrderID,\n        OrderDate,\n        CustomerID,\n        FirstName,\n        LastName,\n        CustomerEmail,\n        ProductID,\n        ProductName,\n        ProductCategory,\n        RegionID,\n        RegionName,\n        country\n    FROM\n        silver.silverTable\n    ) AS O\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseDWH",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

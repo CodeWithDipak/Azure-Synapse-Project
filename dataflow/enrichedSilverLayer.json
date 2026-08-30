@@ -1,0 +1,93 @@
+{
+	"name": "enrichedSilverLayer",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "BronzeLayerData",
+						"type": "DatasetReference"
+					},
+					"name": "BronzeLayerRawData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkToSilverLayer",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToSilverLayer"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterPriceabov100"
+				},
+				{
+					"name": "FirstandLastName"
+				},
+				{
+					"name": "selectColmns"
+				},
+				{
+					"name": "alterRowSilver"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as long,",
+				"          OrderDate as date,",
+				"          CustomerID as long,",
+				"          CustomerName as string,",
+				"          CustomerEmail as string,",
+				"          ProductID as long,",
+				"          ProductName as string,",
+				"          ProductCategory as string,",
+				"          RegionID as long,",
+				"          RegionName as string,",
+				"          Country as string,",
+				"          Quantity as long,",
+				"          UnitPrice as long,",
+				"          TotalAmount as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> BronzeLayerRawData",
+				"BronzeLayerRawData filter(UnitPrice > 100) ~> filterPriceabov100",
+				"filterPriceabov100 derive(FirstName = split(CustomerName, \" \")[1],",
+				"          LastName = split(CustomerName,\" \")[2]) ~> FirstandLastName",
+				"FirstandLastName select(mapColumn(",
+				"          OrderID,",
+				"          OrderDate,",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          CustomerEmail,",
+				"          ProductID,",
+				"          ProductName,",
+				"          ProductCategory,",
+				"          RegionID,",
+				"          RegionName,",
+				"          Country,",
+				"          Quantity,",
+				"          UnitPrice,",
+				"          TotalAmount",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColmns",
+				"selectColmns alterRow(insertIf(1==1)) ~> alterRowSilver",
+				"alterRowSilver sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToSilverLayer"
+			]
+		}
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"name": "DumpToBronzeParquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azuresynapse56-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "orderDay0",
+				"folderPath": "sales",
+				"fileSystem": "broze"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

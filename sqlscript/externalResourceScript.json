@@ -1,0 +1,17 @@
+{
+	"name": "externalResourceScript",
+	"properties": {
+		"content": {
+			"query": "CREATE OR ALTER PROCEDURE dbo.CreateExternalDataSources\n    @storageAccountUrl NVARCHAR(200)\nAS\nBEGIN\n    DECLARE @sql NVARCHAR(MAX);\n\n    IF NOT EXISTS (SELECT * FROM sys.database_scoped_credentials WHERE name = 'my_credentials')\n    BEGIN\n        -- It helps synapse to authenticate the ADLS Gen2\n        CREATE DATABASE SCOPED CREDENTIAL my_credentials\n        WITH IDENTITY = 'Managed Identity';\n    END\n\n    IF EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'silver_layer')\n        DROP EXTERNAL DATA SOURCE silver_layer;\n    \n    -- external data source is the original location of our data\n    SET @sql = N'CREATE EXTERNAL DATA SOURCE silver_layer\n    WITH (\n        LOCATION = ''' + @storageAccountUrl + '/silver/'',\n        CREDENTIAL = my_credentials\n    );';\n    EXEC sp_executesql @sql;\n\n    IF EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'gold_layer')\n        DROP EXTERNAL DATA SOURCE gold_layer;\n\n    SET @sql = N'CREATE EXTERNAL DATA SOURCE gold_layer\n    WITH (\n        LOCATION = ''' + @storageAccountUrl + '/gold/'',\n        CREDENTIAL = my_credentials\n    );';\n    EXEC sp_executesql @sql;\n\n    IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'parquetFormat')\n    BEGIN\n        -- File format in which data is stored\n        CREATE EXTERNAL FILE FORMAT parquetFormat\n        WITH (FORMAT_TYPE = PARQUET);\n    END\nEND",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseDWH",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
