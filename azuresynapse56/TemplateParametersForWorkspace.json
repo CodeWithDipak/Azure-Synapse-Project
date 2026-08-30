@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "azuresynapse56"
+		},
+		"azuresynapse56-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:azuresynapse56.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"azuresynapse56-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://asasa56.dfs.core.windows.net"
+		},
+		"synapseSilverSQLScript_properties_typeProperties_server": {
+			"value": "azuresynapse56-ondemand.sql.azuresynapse.net"
+		},
+		"synapseSilverSQLScript_properties_typeProperties_database": {
+			"value": "synapseDWH"
+		}
+	}
+}
