@@ -1067,9 +1067,111 @@ gold.dimRegion
 gold.dimOrder
 gold.factOrders
 ```
-
 and validate the complete data flow.
 
+---
+# Connecting Azure Synapse Analytics to Power BI
+
+The Gold layer of the Synapse project can be connected to **Power BI** for reporting and visualization.
+
+The recommended architecture is:
+
+```text
+Source Data
+    ↓
+Synapse Pipelines
+    ↓
+Bronze Layer
+    ↓
+Mapping Data Flow
+    ↓
+Silver Layer
+    ↓
+Synapse Serverless SQL
+    ↓
+Gold Tables
+    ↓
+Power BI
+```
+
+## Step 1: Get the Synapse SQL Endpoint
+
+1. Open the **Azure Portal**.
+2. Navigate to **Azure Synapse Workspace**.
+3. Open your Synapse workspace.
+4. On the **Overview** page, locate the **Workspace SQL endpoint**.
+5. Copy the SQL endpoint.
+
+It will look similar to:
+
+```text
+<workspace-name>.sql.azuresynapse.net
+```
+
+> **Note:** Use the Synapse SQL endpoint for Power BI. Do not use the ADLS Gen2 storage URL.
+
+---
+
+## Step 2: Open Power BI Desktop
+
+1. Open **Power BI Desktop**.
+2. Select **Home → Get Data**.
+3. Search for:
+
+```text
+Azure Synapse Analytics SQL
+```
+
+4. Select **Azure Synapse Analytics SQL**.
+5. Click **Connect**.
+
+---
+
+## Step 3: Enter the Synapse Connection Details
+
+Enter the Synapse SQL endpoint obtained in Step 1.
+
+Example:
+
+```text
+Server:
+<workspace-name>.sql.azuresynapse.net
+```
+
+Enter the Synapse SQL database name.
+
+Example:
+
+```text
+Database:
+synapseDWH
+```
+
+Then click **OK**.
+
+Power BI will prompt for authentication.
+
+---
+
+## Step 4: Authenticate and Select the Tables
+
+1. Select the appropriate authentication method, preferably **Microsoft Entra ID / Organizational Account**.
+2. Sign in using an account that has permission to access the Synapse SQL endpoint and database.
+3. In the **Navigator** window, locate the Gold tables.
+4. Select the required tables:
+
+```text
+gold.dimCustomer
+gold.dimProduct
+gold.dimRegion
+gold.dimOrder
+gold.factOrders
+```
+
+5. Select **Transform Data** if you want to review or modify the data before loading it.
+6. Otherwise, select **Load** to import the tables into Power BI.
+
+The resulting Power BI model can then be used to create relationships, DAX measures, reports, and dashboards.
 ---
 
 # End-to-End Execution
